@@ -27,7 +27,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/chase-moskal/webp-hero.git"
+		"url": "git+https://github.com/D-Magic/webp-hero.git"
 	},
 	"keywords": [
 		"webp",
@@ -35,7 +35,7 @@
 		"webp-polyfill",
 		"image-conversion"
 	],
-	"author": "Chase Moskal <chasemoskal@gmail.com>",
+	"author": "Maciej Wloch <maciej@denfield.co.uk>",
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/chase-moskal/webp-hero/issues"
