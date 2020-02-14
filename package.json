@@ -38,9 +38,9 @@
 	"author": "Maciej Wloch <maciej@denfield.co.uk>",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/chase-moskal/webp-hero/issues"
+		"url": "https://github.com/D-Magic/webp-hero/issues"
 	},
-	"homepage": "https://github.com/chase-moskal/webp-hero#readme",
+	"homepage": "https://github.com/D-Magic/webp-hero#readme",
 	"dependencies": {},
 	"devDependencies": {
 		"@babel/runtime": "^7.8.4",
