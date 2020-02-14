@@ -4,15 +4,15 @@ import {loadBinaryData} from "./load-binary-data.js"
 import {detectWebpSupport} from "./detect-webp-support.js"
 import {WebpMachineOptions, PolyfillDocumentOptions, DetectWebpImage, DetectWebpBackground} from "./interfaces.js"
 
-const relax = () => new Promise(resolve => requestAnimationFrame(resolve))
+const relax = () => new Promise(resolve => requestAnimationFrame(resolve));
 
 export class WebpMachineError extends Error {}
 
 export const defaultDetectWebpImage: DetectWebpImage = (image: HTMLImageElement) =>
-	/\.webp.*$/i.test(image.src)
+	/\.webp.*$/i.test(image.src);
 
 export const defaultDetectWebpBackground: DetectWebpBackground = (el: HTMLDivElement) =>
-	/\.webp.*$/i.test(el.style.backgroundImage) || /\.webp.*$/i.test(el.dataset.bg)
+	/\.webp.*$/i.test(el.style.backgroundImage) || /\.webp.*$/i.test(el.dataset.bg);
 
 /**
  * Webp Machine
