@@ -1,5 +1,5 @@
 {
-	"name": "webp-hero",
+	"name": "denfield-webp-hero",
 	"version": "0.0.0-dev.24",
 	"description": "webp image format polyfill for browsers",
 	"main": "dist-cjs/index.js",
@@ -43,6 +43,7 @@
 	"homepage": "https://github.com/chase-moskal/webp-hero#readme",
 	"dependencies": {},
 	"devDependencies": {
+		"@babel/runtime": "^7.8.4",
 		"array-from": "^2.1.1",
 		"barrelsby": "^2.2.0",
 		"browserify": "^16.5.0",
