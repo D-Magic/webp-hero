@@ -12,7 +12,7 @@ export const defaultDetectWebpImage: DetectWebpImage = (image: HTMLImageElement)
 	/\.webp.*$/i.test(image.src)
 
 export const defaultDetectWebpBackground: DetectWebpBackground = (el: HTMLDivElement) =>
-	/\.webp.*$/i.test(el.style.backgroundImage)
+	/\.webp.*$/i.test(el.style.backgroundImage) || /\.webp.*$/i.test(el.dataset.bg)
 
 /**
  * Webp Machine
@@ -91,22 +91,22 @@ export class WebpMachine {
 	 */
 	async polyfillBackground(el: HTMLDivElement): Promise<void> {
 		if (await this.webpSupport) return
-		const {style: {backgroundImage}} = el
+		const {style: {backgroundImage}, dataset: {bg}} = el
 		if (this.detectWebpBackground(el)) {
-			const bg = /([\w\/]+\.\w+)/gi.exec(backgroundImage)
-			if (this.cache[bg[0]]) {
-				el.style.backgroundImage = `url("${this.cache[bg[0]]}")`
+			const image = (/([\w\/]+\.\w+)/gi.exec(backgroundImage) || /([\w\/]+\.\w+)/gi.exec(bg))[0]
+			if (this.cache[image]) {
+				el.style.backgroundImage = `url("${this.cache[image]}")`
 				return
 			}
 			try {
-				const webpData = await loadBinaryData(bg[0])
+				const webpData = await loadBinaryData(image)
 				const pngData = await this.decode(webpData)
-				this.cache[bg[0]] = pngData
+				this.cache[image] = pngData
 				el.style.backgroundImage = `url("${pngData}")`
 			}
 			catch (error) {
 				error.name = WebpMachineError.name
-				error.message = `failed to polyfill image "${bg[0]}": ${error.message}`
+				error.message = `failed to polyfill image "${image}": ${error.message}`
 				throw error
 			}
 		}

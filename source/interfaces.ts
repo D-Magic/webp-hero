@@ -3,7 +3,7 @@ import {Webp} from "../libwebp/dist/webp.js"
 
 export type DetectWebpImage = (image: HTMLImageElement) => boolean
 
-export type DetectWebpBackground = (image: HTMLDivElement) => boolean
+export type DetectWebpBackground = (el: HTMLDivElement) => boolean
 
 export interface WebpMachineOptions {
 	webp?: Webp
