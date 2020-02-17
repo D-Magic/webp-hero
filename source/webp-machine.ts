@@ -12,7 +12,7 @@ export const defaultDetectWebpImage: DetectWebpImage = (image: HTMLImageElement)
 	/\.webp.*$/i.test(image.src);
 
 export const defaultDetectWebpBackground: DetectWebpBackground = (el: HTMLDivElement) =>
-	/\.webp.*$/i.test(el.style.backgroundImage) || /\.webp.*$/i.test(el.dataset.bg);
+	/\.webp.*$/i.test(el.style.backgroundImage) || (el.dataset &&  /\.webp.*$/i.test(el.dataset.bg));
 
 /**
  * Webp Machine
@@ -91,8 +91,10 @@ export class WebpMachine {
 	 */
 	async polyfillBackground(el: HTMLDivElement): Promise<void> {
 		if (await this.webpSupport) return
-		const {style: {backgroundImage}, dataset: {bg}} = el
+		const {style: {backgroundImage}, dataset} = el
+		let bg = null;
 		if (this.detectWebpBackground(el)) {
+			if (dataset) bg = el.dataset.bg
 			const image = (/([\w\/]+\.\w+)/gi.exec(backgroundImage) || /([\w\/]+\.\w+)/gi.exec(bg))[0]
 			if (this.cache[image]) {
 				el.style.backgroundImage = `url("${this.cache[image]}")`
