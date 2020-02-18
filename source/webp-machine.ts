@@ -70,7 +70,7 @@ export class WebpMachine {
 		const {src, dataset} = image
 		let dataSrc = null
 		if (this.detectWebpImage(image)) {
-			if (!src && dataset && dataset.src) dataSrc = dataset.src
+			if (dataset && dataset.src) dataSrc = dataset.src
 			const img = dataSrc || src
 			if (this.cache[img]) {
 				image.src = this.cache[img]
@@ -80,6 +80,7 @@ export class WebpMachine {
 				const webpData = await loadBinaryData(img)
 				const pngData = await this.decode(webpData)
 				image.src = this.cache[img] = pngData
+				delete image.dataset.src
 			}
 			catch (error) {
 				error.name = WebpMachineError.name
@@ -97,7 +98,7 @@ export class WebpMachine {
 		const {style: {backgroundImage}, dataset} = el
 		let bg = null;
 		if (this.detectWebpBackground(el)) {
-			if (dataset) bg = dataset.bg
+			if (dataset && dataset.bg) bg = dataset.bg
 			const image = (/([\w\/]+\.\w+)/gi.exec(backgroundImage) || /([\w\/]+\.\w+)/gi.exec(bg))[0]
 			if (this.cache[image]) {
 				el.style.backgroundImage = `url("${this.cache[image]}")`
@@ -108,6 +109,7 @@ export class WebpMachine {
 				const pngData = await this.decode(webpData)
 				this.cache[image] = pngData
 				el.style.backgroundImage = `url("${pngData}")`
+				delete el.dataset.bg
 			}
 			catch (error) {
 				error.name = WebpMachineError.name
