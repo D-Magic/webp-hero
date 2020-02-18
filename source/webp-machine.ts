@@ -71,7 +71,7 @@ export class WebpMachine {
 		let dataSrc = null
 		if (this.detectWebpImage(image)) {
 			if (!src && dataset && dataset.src) dataSrc = dataset.src
-			const img = src || dataSrc
+			const img = dataSrc || src
 			if (this.cache[img]) {
 				image.src = this.cache[img]
 				return
