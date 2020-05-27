@@ -1,10 +1,16 @@
-
-import {Webp} from "../libwebp/dist/webp.js"
-import {loadBinaryData} from "./load-binary-data.js"
-import {detectWebpSupport} from "./detect-webp-support.js"
-import {WebpMachineOptions, PolyfillDocumentOptions, DetectWebpImage, DetectWebpBackground} from "./interfaces.js"
+import { Webp } from "../libwebp/dist/webp.js"
+import { loadBinaryData } from "./load-binary-data.js"
+import { detectWebpSupport } from "./detect-webp-support.js"
+import {
+    WebpMachineOptions,
+    PolyfillDocumentOptions,
+    DetectWebpImage,
+    DetectWebpBackground
+} from "./interfaces.js"
+import { WebpQueue } from "./webpQueue.js"
 
 const relax = () => new Promise(resolve => requestAnimationFrame(resolve));
+const queue = new WebpQueue();
 
 export class WebpMachineError extends Error {}
 
@@ -24,6 +30,7 @@ export class WebpMachine {
 	private readonly webpSupport: Promise<boolean>
 	private readonly detectWebpImage: DetectWebpImage
 	private readonly detectWebpBackground: DetectWebpBackground
+    private processing = false;
 	private busy = false
 	private cache: {[key: string]: string} = {}
 
@@ -33,7 +40,11 @@ export class WebpMachine {
 		detectWebpImage = defaultDetectWebpImage,
 		detectWebpBackground = defaultDetectWebpBackground
 	}: WebpMachineOptions = {}) {
+        this.processing = false;
+        this.busy = false;
+        this.cache = {};
 		this.webp = webp
+		this.webp.Module['doNotCaptureKeyboard'] = true;
 		this.webpSupport = webpSupport
 		this.detectWebpImage = detectWebpImage
 		this.detectWebpBackground = detectWebpBackground
@@ -119,26 +130,35 @@ export class WebpMachine {
 		}
 	}
 
-	/**
-	 * Polyfill webp format on the entire web page
-	 */
-	async polyfillDocument({
-		   document = window.document,
-		   selectors = "img"
-    }: PolyfillDocumentOptions = {}): Promise<void> {
-		if (await this.webpSupport) return null
-		for (const el of Array.from(document.querySelectorAll(selectors))) {
-			try {
-				if (el instanceof HTMLImageElement)
-					await this.polyfillImage(el);
-				else
-					await this.polyfillBackground(el as HTMLDivElement);
-			}
-			catch (error) {
-				error.name = WebpMachineError.name
-				error.message = `webp el polyfill failed for url "${el instanceof HTMLImageElement ? el.src : null}": ${error}`
-				throw error
-			}
-		}
-	}
+    /**
+     * Polyfill webp format on the entire web page
+     */
+    async polyfillDocument({
+                               document = window.document,
+                               selectors = "img",
+                           }: PolyfillDocumentOptions = {}): Promise<void> {
+        if (await this.webpSupport) return null;
+
+        queue.enqueue(Array.from(document.querySelectorAll(selectors)));
+
+        if (this.processing) return null;
+
+        this.processing = true;
+        let image;
+        while (image = queue.dequeue()) {
+            try {
+                if (image instanceof HTMLImageElement) {
+                    await this.polyfillImage(image);
+                } else {
+                    await this.polyfillBackground(image);
+                }
+            } catch (error) {
+                this.processing = false;
+                error.name = WebpMachineError.name;
+                error.message = `webp el polyfill failed for url "${image instanceof HTMLImageElement ? image.src : null}": ${error}`;
+                throw error;
+            }
+        }
+        this.processing = false;
+    }
 }

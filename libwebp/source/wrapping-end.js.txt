@@ -1,5 +1,6 @@
 
 	this.Module = Module
+	this.Module.doNotCaptureKeyboard = true
 	this.webpToSdl = Module.cwrap("WebpToSDL", "number", ["array", "number"])
 	this.setCanvas = function(canvas) { Module.canvas = canvas }
 }
